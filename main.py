@@ -14,16 +14,11 @@ from validators.validators import files_exists, report_validation, date_validati
 
 
 def get_report_on_log_files(
-    *log_files: str, report: str = "average", date: str | None = None
+    *log_files: list[str], report: str = "average", date: str | None = None
 ) -> None:
     """
     Документация...
     """
-
-    # ПРЕОБРАЗОВАТЬ СТРОКУ С ИМЕНАМИ ФАЙЛОВ В КОРТЕЖ С ИМЕНАМИ ФАЙЛОВ???
-
-    # Проверяем существование файлов в системе
-    files_exists(log_files=log_files)
 
     # Проверяем валидность аргументов report и date
     report_validation(report=report)
@@ -42,25 +37,26 @@ def get_report_on_log_files(
 if __name__ == "__main__":
     get_report_on_log_files("example1.log", "example2.log", report="average")
 
-    # # Создаём объект анализатора аргументов
-    # parser_object = argparse.ArgumentParser(
-    #     add_help="Тут описание скрипта для обработы log файлов."
-    # )
+    # Создаём объект анализатора аргументов
+    parser_object = argparse.ArgumentParser(
+        add_help="Тут описание скрипта для обработы log файлов."
+    )
 
-    # # Создаём пространство имён с именованными аргументами
-    # parser_object.add_argument(
-    #     "--file", help="Имена log файлов или пути к ним", required=True
-    # )
-    # parser_object.add_argument(
-    #     "--report", help="Тип отчёта по log файлам.", required=True
-    # )
-    # parser_object.add_argument(
-    #     "--date",
-    #     help="Значение даты по которой необходимо получить данные из log файлов.",
-    # )
-    # named_arguments = parser_object.parse_args()
+    # Создаём пространство имён с именованными аргументами
+    parser_object.add_argument(
+        "--file", nargs="+", help="Имена log файлов или пути к ним", required=True
+    )
+    parser_object.add_argument(
+        "--report", help="Тип отчёта по log файлам.", required=True
+    )
+    parser_object.add_argument(
+        "--date",
+        help="Значение даты по которой необходимо получить данные из log файлов.",
+        default=None,
+    )
+    named_arguments = parser_object.parse_args()
 
-    # # Запускаем функцию get_formatted_table
-    # get_report_on_log_files(
-    #     named_arguments.file, named_arguments.where, named_arguments.aggregate
-    # )
+    # Запускаем функцию get_formatted_table
+    get_report_on_log_files(
+        named_arguments.file, named_arguments.where, named_arguments.aggregate
+    )

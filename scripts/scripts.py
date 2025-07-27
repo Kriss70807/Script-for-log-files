@@ -6,7 +6,6 @@
 
 from abc import ABC, abstractmethod
 import json
-
 from tabulate import tabulate
 
 
@@ -16,9 +15,9 @@ class LogDataAnalyzer(ABC):
     """
 
     def __init__(
-        self, log_files: tuple[str], report_method: str, date_filter: str | None = None
+        self, log_files: list[str], report_method: str, date_filter: str | None = None
     ) -> None:
-        self.log_files: tuple[str] = log_files
+        self.log_files: list[str] = log_files
         self.report_method: str = report_method
         self.date_filter: str | None = date_filter
 

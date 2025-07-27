@@ -15,10 +15,11 @@ from my_exceptions.my_exceptions import LogFileNotExistError, ReportError, DateE
 DATE_PATTERN = r'\d{4}-\d{2}-\d{2}'
 
 
-def files_exists(log_files: tuple[str, Any]) -> None | LogFileNotExistError:
+def files_exists(log_files: list[str]) -> True | LogFileNotExistError:
     for log_file in log_files:
         if not exists(log_file):
             raise LogFileNotExistError(log_file)
+    return True
 
 
 def report_validation(report: str) -> None | ReportError:
@@ -27,5 +28,5 @@ def report_validation(report: str) -> None | ReportError:
 
 
 def date_validation(date: str) -> None | DateError:
-    if re.fullmatch(DATE_PATTERN, date) == None:
+    if re.fullmatch(DATE_PATTERN, date) is None:
         raise DateError(date)
