@@ -5,8 +5,6 @@
 example1.log
 example2.log
 **/__pycache__/
-
-
 .gitignore
 my_exceptions/__pycache__/__init__.cpython-313.pyc
 my_exceptions/__pycache__/my_exceptions.cpython-313.pyc
