@@ -4,80 +4,87 @@
 - класс для работы с лог-файлами (LogData);
 """
 
-from email.policy import default
+from abc import ABC, abstractmethod
 import json
-import re
-from typing import Any
 
 from tabulate import tabulate
 
 
-REPORT_AVERAGE: str = "average"
-HEADERS_REPORT_AVERAGE: list[str] = ["", "handler", "total", "avg_response_time"]
+class LogDataAnalyzer(ABC):
+    """
+    Документация...
+    """
 
-
-def get_log_file_data(log_files: tuple[str], date: str | None) -> list[dict[str, Any]]:
-    data_logs: list[dict[str, Any]] = list()
-
-    for log_file in log_files:
-        with open(file=log_file, mode="r", encoding="utf-8") as log:
-            for row in log:
-                if row != "":
-                    row: dict[str, str | float] = json.loads(row)
-
-                    # ???ЕСЛИ ЭТО ВДРУГ ВАЖНО???
-                    # ТОГДА СНАЧАЛА if row["status"] == 200: И ТОЛЬКО ПОТОМ ОСТАЛЬНОЕ
-
-                    if date and row["@timestamp"][:10] != date:
-                        continue
-
-                    cropped_row: dict[str, str | float] = {
-                        "date": row["@timestamp"][:10],
-                        "handler": row["url"],
-                        "response_time": row["response_time"],
-                        "user_agent": row["http_user_agent"],
-                    }
-
-                    data_logs.append(cropped_row)
-
-    return data_logs
-
-
-def get_report_data(data_logs: list[dict[str, Any]]) -> list[list[str | int | float]]:
-    total_data: dict[str, int] = dict()
-    time_data: dict[str, float] = dict()
-    for data_log in data_logs:
-        key: str = data_log["handler"]
-        total_data[key] = total_data.setdefault(key, 0) + 1
-        time_data[key] = (
-            time_data.setdefault(key, 0.0) + data_log["response_time"]
-        )
-
-    processed_data: list[list[str | int | float]] = list()
-    for key, value in time_data.items():
-        processed_data.append([key, total_data[key], value / total_data[key]])
-
-    return sorted(processed_data, key=lambda pd: pd[1], reverse=True)
-
-
-class LogData:
     def __init__(
-        self, log_files: tuple[str], report: str, date: str | None = None
+        self, log_files: tuple[str], report_method: str, date_filter: str | None = None
     ) -> None:
-        self.__data_logs: list[dict[str, Any]] = get_log_file_data(
-            log_files=log_files, date=date
-        )
-        self.__report_method: str = report
+        self.log_files: tuple[str] = log_files
+        self.report_method: str = report_method
+        self.date_filter: str | None = date_filter
 
-    def get_average_report(self):
-        if self.__report_method == REPORT_AVERAGE:
-            self.report: list[list[str | int | float]] = get_report_data(
-                self.__data_logs
-            )
-            return tabulate(
-                tabular_data=self.report,
-                headers=HEADERS_REPORT_AVERAGE,
+    def _get_log_files_data(self) -> list[dict[str, str | int | float]]:
+        """
+        Документация...
+        """
+        data_logs: list[dict[str, str | int | float]] = list()
+        for log_file in self.log_files:
+            with open(file=log_file, mode="r", encoding="utf-8") as log:
+                for row in log:
+                    if row != "":
+                        data_log: dict[str, str | float] = json.loads(row)
+                        if (
+                            self.date_filter
+                            and row["@timestamp"][:10] != self.date_filter
+                        ):
+                            continue
+                        data_logs.append(data_log)
+        return data_logs
+
+    def _present_report(self, table, headers) -> None:
+        """
+        Документация...
+        """
+        print(
+            tabulate(
+                tabular_data=table,
+                headers=headers,
                 showindex="always",
                 floatfmt=".3f",
-                tablefmt='simple'
+                tablefmt="simple",
             )
+        )
+
+    @abstractmethod
+    def report(self) -> None:
+        """
+        Документация...
+        """
+        pass
+
+
+class LogAvgReporter(LogDataAnalyzer):
+    """
+    Документация...
+    """
+
+    def report(self) -> None:
+        """
+        Документация...
+        """
+        data_logs: list[dict[str, str | int | float]] = self._get_log_files_data()
+
+        total_data: dict[str, int] = dict()
+        time_data: dict[str, float] = dict()
+        for data_log in data_logs:
+            key: str = data_log["url"]
+            total_data[key] = total_data.setdefault(key, 0) + 1
+            time_data[key] = time_data.setdefault(key, 0.0) + data_log["response_time"]
+
+        processed_data: list[list[str | int | float]] = list()
+        for key, value in time_data.items():
+            processed_data.append([key, total_data[key], value / total_data[key]])
+            processed_data.sort(key=lambda pd: pd[1], reverse=True)
+
+        self._present_report(
+            table=processed_data, headers=["", "handler", "total", "avg_response_time"]
+        )
