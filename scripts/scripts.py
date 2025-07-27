@@ -58,7 +58,7 @@ class LogDataAnalyzer(ABC):
         """
         Документация...
         """
-        pass
+        return None
 
 
 class LogAvgReporter(LogDataAnalyzer):
