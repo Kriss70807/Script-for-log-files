@@ -1,0 +1,6 @@
+.venv
+.vscode
+.pylintrc
+.coverage
+example1.log
+example2.log
