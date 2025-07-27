@@ -3,12 +3,5 @@
 .pylintrc
 .coverage
 *.log
-**/__pycache__/
-**.pyc
-# my_exceptions/__pycache__/my_exceptions.cpython-313.pyc
-# scripts/__pycache__/__init__.cpython-313.pyc
-# scripts/__pycache__/scripts.cpython-313.pyc
-# validators/__pycache__/__init__.cpython-313.pyc
-# validators/__pycache__/validators.cpython-313.pyc
-validators/__pycache__/
-scripts/__pycache__/
+*/__pycache__
+*.pyc
