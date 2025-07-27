@@ -4,3 +4,6 @@
 .coverage
 example1.log
 example2.log
+scripts/__pycache__
+my_exceptions/__pycache__
+validators/__pycache__
