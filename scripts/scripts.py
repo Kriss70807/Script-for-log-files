@@ -11,7 +11,16 @@ from tabulate import tabulate
 
 class LogDataAnalyzer(ABC):
     """
-    Документация...
+    Абстрактный класс для работы с лог-файлами.
+
+    Атрибуты:
+     log_files (list): Список имён лог-файлов.
+     report_method (str): Метод обработки данных лог-файлов.
+     date_filter (str): Дата для фильтрации данных лог-файлов.
+    Методы:
+     get_log_files_data(): Возвращает данные лог-файлов в формате JSON.
+     present_report(): Возвращает сведённые в таблицу обработанные данные лог-файлов.
+     report(): Абстрактный метод для обработки лог-файлов (ДОЛЖЕН БЫТЬ ПЕРЕОПРЕДЕЛЁН В ДОЧЕРНИХ КЛАССАХ).
     """
 
     def __init__(
@@ -23,7 +32,7 @@ class LogDataAnalyzer(ABC):
 
     def get_log_files_data(self) -> list[dict[str, str | int | float]]:
         """
-        Документация...
+        Возвращает данные лог-файлов в формате JSON.
         """
         data_logs: list[dict[str, str | int | float]] = list()
         for log_file in self.log_files:
@@ -41,7 +50,7 @@ class LogDataAnalyzer(ABC):
 
     def present_report(self, table, headers) -> str:
         """
-        Документация...
+        Возвращает сведённые в таблицу обработанные данные лог-файлов.
         """
         return tabulate(
             tabular_data=table,
@@ -54,19 +63,27 @@ class LogDataAnalyzer(ABC):
     @abstractmethod
     def report(self) -> None:
         """
-        Документация...
+        Абстрактный метод для обработки лог-файлов (ДОЛЖЕН БЫТЬ ПЕРЕОПРЕДЕЛЁН В ДОЧЕРНИХ КЛАССАХ).
         """
         return None
 
 
 class LogAvgReporter(LogDataAnalyzer):
     """
-    Документация...
+    Класс для работы с лог-файлами.
+
+    Методы:
+     report(): Переопределённый абстрактный метод родительского класса LogDataAnalyzer.
+     Формирует данные со списком эндпоинтов, количеством запросов по каждому эндпоинту и
+     средним временем ответа.
     """
 
     def report(self) -> str:
         """
-        Документация...
+        Переопределённый абстрактный метод родительского класса LogDataAnalyzer.
+        
+        Формирует данные со списком эндпоинтов, количеством запросов по каждому эндпоинту и
+        средним временем ответа.
         """
         data_logs: list[dict[str, str | int | float]] = self.get_log_files_data()
 
@@ -83,7 +100,7 @@ class LogAvgReporter(LogDataAnalyzer):
         for key, value in time_data.items():
             processed_data.append([key, total_data[key], value / total_data[key]])
             processed_data.sort(key=lambda pd: pd[1], reverse=True)
-        a = None
+
         return self.present_report(
             table=processed_data, headers=["", "handler", "total", "avg_response_time"]
         )

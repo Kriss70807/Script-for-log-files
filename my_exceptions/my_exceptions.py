@@ -7,6 +7,11 @@
 
 
 class LogFileNotExistError(FileNotFoundError):
+    '''
+    Исключение для обработки тех случаев, когда файла с конкретным именем
+    нет в системе, либо когда пользователь неверно его указал.
+    '''
+
     def __init__(self, log_file: str) -> None:
         self.message: str = f"Файл {log_file} не найден."
 
@@ -17,6 +22,11 @@ class LogFileNotExistError(FileNotFoundError):
 
 
 class ReportError(ValueError):
+    '''
+    Исключение для обработки тех случаев, когда пользователь передал неверное
+    значение в аргумент report.
+    '''
+
     def __init__(self, report: str) -> None:
         self.message: str = f"{report} недопустимое значение для аргумента report."
 
@@ -25,6 +35,10 @@ class ReportError(ValueError):
 
 
 class DateError(ValueError):
+    '''
+    Исключение для обработки тех случаев, когда пользователь передал неверное
+    значение в аргумент date.
+    '''
     def __init__(self, date: str):
         self.message: str = f'Формат даты {date} недопустим.'
     
