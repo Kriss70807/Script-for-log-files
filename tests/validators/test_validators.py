@@ -15,7 +15,7 @@ def test_files_validator_good(create_log_file, log_files, result) -> None:
 )
 def test_files_validator_bad(log_file, result) -> None:
     with pytest.raises(result):
-        files_exists(log_file) == result
+        files_exists(log_file)
 
 
 @pytest.mark.parametrize(
