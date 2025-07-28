@@ -28,7 +28,7 @@ class LogDataAnalyzer(ABC):
     ) -> None:
         self.log_files: list[str] = log_files
         self.report_method: str = report_method
-        self.date_filter: str | None = date_filter
+        self.date_filter: str | None = date_filter[:5] + date_filter[8:] + date_filter[4:7]
 
     def get_log_files_data(self) -> list[dict[str, str | int | float]]:
         """
@@ -42,7 +42,7 @@ class LogDataAnalyzer(ABC):
                         data_log: dict[str, str | float] = json.loads(row)
                         if (
                             self.date_filter
-                            and row["@timestamp"][:10] != self.date_filter
+                            and row[16:26] != self.date_filter
                         ):
                             continue
                         data_logs.append(data_log)
