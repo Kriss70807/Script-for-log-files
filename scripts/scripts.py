@@ -21,7 +21,7 @@ class LogDataAnalyzer(ABC):
         self.report_method: str = report_method
         self.date_filter: str | None = date_filter
 
-    def _get_log_files_data(self) -> list[dict[str, str | int | float]]:
+    def get_log_files_data(self) -> list[dict[str, str | int | float]]:
         """
         Документация...
         """
@@ -39,18 +39,16 @@ class LogDataAnalyzer(ABC):
                         data_logs.append(data_log)
         return data_logs
 
-    def _present_report(self, table, headers) -> None:
+    def present_report(self, table, headers) -> str:
         """
         Документация...
         """
-        print(
-            tabulate(
-                tabular_data=table,
-                headers=headers,
-                showindex="always",
-                floatfmt=".3f",
-                tablefmt="simple",
-            )
+        return tabulate(
+            tabular_data=table,
+            headers=headers,
+            showindex="always",
+            floatfmt=".3f",
+            tablefmt="simple",
         )
 
     @abstractmethod
@@ -66,24 +64,26 @@ class LogAvgReporter(LogDataAnalyzer):
     Документация...
     """
 
-    def report(self) -> None:
+    def report(self) -> str:
         """
         Документация...
         """
-        data_logs: list[dict[str, str | int | float]] = self._get_log_files_data()
+        data_logs: list[dict[str, str | int | float]] = self.get_log_files_data()
 
         total_data: dict[str, int] = dict()
         time_data: dict[str, float] = dict()
         for data_log in data_logs:
             key: str = data_log["url"]
             total_data[key] = total_data.setdefault(key, 0) + 1
-            time_data[key] = time_data.setdefault(key, 0.0) + data_log["response_time"]
+            time_data[key] = time_data.setdefault(key, 0.0) + float(
+                data_log["response_time"]
+            )
 
         processed_data: list[list[str | int | float]] = list()
         for key, value in time_data.items():
             processed_data.append([key, total_data[key], value / total_data[key]])
             processed_data.sort(key=lambda pd: pd[1], reverse=True)
-
-        self._present_report(
+        a = None
+        return self.present_report(
             table=processed_data, headers=["", "handler", "total", "avg_response_time"]
         )

@@ -8,13 +8,16 @@
 """
 
 import argparse
+import os
+from re import S
 
 from scripts.scripts import LogAvgReporter
+from tests.scripts.conftest import NAMES_TEST_LOG_FILES
 from validators.validators import files_exists, report_validation, date_validation
 
 
 def get_report_on_log_files(
-    *log_files: list[str], report: str = "average", date: str | None = None
+    log_files: list[str], report: str = "average", date: str | None = None
 ) -> None:
     """
     Документация...
@@ -31,32 +34,48 @@ def get_report_on_log_files(
             log_files=log_files, report_method=report, date_filter=date
         )
         # Формируем и возвращаем отчёт по данным лог файлов
-        data_logs.report()
+        print(data_logs.report())
 
 
 if __name__ == "__main__":
-    get_report_on_log_files("example1.log", "example2.log", report="average")
+    # get_report_on_log_files(["example1.log", "example2.log"], report="average")
+    # a = LogAvgReporter(["example1.log", "example2.log"], "average")
+    # a.report()
 
-    # Создаём объект анализатора аргументов
-    parser_object = argparse.ArgumentParser(
-        add_help="Тут описание скрипта для обработы log файлов."
-    )
+    for name in NAMES_TEST_LOG_FILES:
+        i = 1.1
+        with open(name, "w", encoding="utf-8") as test_log_file:
+            test_data: dict[str, str | float] = dict()
+            test_data["url"] = f"{name[:14]}"
+            test_data["response_time"] = f"{float(name[13])}"
+            s: str = f'{test_data}'.replace("'", '"')
+            test_log_file.write(s)
+            i += 1.1
+    a = LogAvgReporter(NAMES_TEST_LOG_FILES, "average")
+    b = a.report()
+    for name in NAMES_TEST_LOG_FILES:
+        os.remove(name)
 
-    # Создаём пространство имён с именованными аргументами
-    parser_object.add_argument(
-        "--file", nargs="+", help="Имена log файлов или пути к ним", required=True
-    )
-    parser_object.add_argument(
-        "--report", help="Тип отчёта по log файлам.", required=True
-    )
-    parser_object.add_argument(
-        "--date",
-        help="Значение даты по которой необходимо получить данные из log файлов.",
-        default=None,
-    )
-    named_arguments = parser_object.parse_args()
+    # # Создаём объект анализатора аргументов
+    # parser_object = argparse.ArgumentParser(
+    #     add_help="Тут описание скрипта для обработы log файлов."
+    # )
 
-    # Запускаем функцию get_formatted_table
-    get_report_on_log_files(
-        named_arguments.file, named_arguments.where, named_arguments.aggregate
-    )
+    # # Создаём пространство имён с именованными аргументами
+    # parser_object.add_argument(
+    #     "--file", nargs="+", help="Имена log файлов или пути к ним", required=True
+    # )
+    # parser_object.add_argument(
+    #     "--report", help="Тип отчёта по log файлам.", required=True
+    # )
+    # parser_object.add_argument(
+    #     "--date",
+    #     help="Значение даты по которой необходимо получить данные из log файлов.",
+    #     default=None,
+    # )
+    # named_arguments = parser_object.parse_args()
+
+    # # Запускаем функцию get_formatted_table
+    # get_report_on_log_files(
+    #     named_arguments.file, named_arguments.where, named_arguments.aggregate
+    # )

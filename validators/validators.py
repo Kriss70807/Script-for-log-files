@@ -15,7 +15,7 @@ from my_exceptions.my_exceptions import LogFileNotExistError, ReportError, DateE
 DATE_PATTERN = r'\d{4}-\d{2}-\d{2}'
 
 
-def files_exists(log_files: list[str]) -> True | LogFileNotExistError:
+def files_exists(log_files: list[str]) -> bool | LogFileNotExistError:
     for log_file in log_files:
         if not exists(log_file):
             raise LogFileNotExistError(log_file)
