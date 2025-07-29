@@ -5,8 +5,19 @@
 """
 
 from abc import ABC, abstractmethod
+import datetime
 import json
+import re
 from tabulate import tabulate
+
+
+DATETIME_PATTERN = r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})"
+
+
+def get_date(date: str) -> str:
+    """ """
+    full_date: re.Match = re.match(DATETIME_PATTERN, date)
+    return f'{full_date.group(1)}-{full_date.group(3)}-{full_date.group(2)}'
 
 
 class LogDataAnalyzer(ABC):
@@ -28,7 +39,7 @@ class LogDataAnalyzer(ABC):
     ) -> None:
         self.log_files: list[str] = log_files
         self.report_method: str = report_method
-        self.date_filter: str | None = date_filter[:5] + date_filter[8:] + date_filter[4:7]
+        self.date_filter: str | None = date_filter
 
     def get_log_files_data(self) -> list[dict[str, str | int | float]]:
         """
@@ -40,10 +51,8 @@ class LogDataAnalyzer(ABC):
                 for row in log:
                     if row != "":
                         data_log: dict[str, str | float] = json.loads(row)
-                        if (
-                            self.date_filter
-                            and row[16:26] != self.date_filter
-                        ):
+                        log_date: str = get_date(data_log["@timestamp"])
+                        if self.date_filter and log_date != self.date_filter:
                             continue
                         data_logs.append(data_log)
         return data_logs
@@ -81,7 +90,7 @@ class LogAvgReporter(LogDataAnalyzer):
     def report(self) -> str:
         """
         Переопределённый абстрактный метод родительского класса LogDataAnalyzer.
-        
+
         Формирует данные со списком эндпоинтов, количеством запросов по каждому эндпоинту и
         средним временем ответа.
         """
