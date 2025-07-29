@@ -6,6 +6,7 @@ def test_logavgreporter_get_log_files_data_good(create_log_files) -> None:
     assert test_reporter.get_log_files_data() == TEST_LIST_DATA_LOGS
 
 
-def test_logavgreporter_report_good(create_log_files) -> None:
+def test_logavgreporter_report_without_date_filter_good(create_log_files) -> None:
     test_reporter: LogAvgReporter = LogAvgReporter(NAMES_TEST_LOG_FILES, 'test')
     assert test_reporter.report() == TEST_REPORT
+    
