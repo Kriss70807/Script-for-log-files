@@ -7,12 +7,11 @@
 
 from os.path import exists
 import re
-from typing import Any
 
 from my_exceptions.my_exceptions import LogFileNotExistError, ReportError, DateError
 
 
-DATE_PATTERN = r'\d{4}-\d{2}-\d{2}'
+DATE_PATTERN = r"\d{4}-\d{2}-\d{2}"
 
 
 def files_exists(log_files: list[str]) -> bool | LogFileNotExistError:

@@ -5,19 +5,24 @@
 """
 
 from abc import ABC, abstractmethod
-import datetime
 import json
 import re
 from tabulate import tabulate
 
 
-DATETIME_PATTERN = r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})"
+DATETIME_PATTERN = r"(\d{4})-(\d{2})-(\d{2})"
 
 
 def get_date(date: str) -> str:
-    """ """
+    """
+    Возвращает строчное представление даты формата ГГГГ-ДД-ММ, полученное из
+    строки формата ...что угодно...ГГГГ-ММ-ДД...что угодно... .
+
+    Аргументы:
+     date (str): строка формата ...что угодно...ГГГГ-ММ-ДД...что угодно... .
+    """
     full_date: re.Match = re.match(DATETIME_PATTERN, date)
-    return f'{full_date.group(1)}-{full_date.group(3)}-{full_date.group(2)}'
+    return f"{full_date.group(1)}-{full_date.group(3)}-{full_date.group(2)}"
 
 
 class LogDataAnalyzer(ABC):
@@ -49,11 +54,12 @@ class LogDataAnalyzer(ABC):
         for log_file in self.log_files:
             with open(file=log_file, mode="r", encoding="utf-8") as log:
                 for row in log:
-                    if row != "":
+                    if row:
                         data_log: dict[str, str | float] = json.loads(row)
-                        log_date: str = get_date(data_log["@timestamp"])
-                        if self.date_filter and log_date != self.date_filter:
-                            continue
+                        if self.date_filter:
+                            data_log_date: str = get_date(data_log["@timestamp"])
+                            if data_log_date != self.date_filter:
+                                continue
                         data_logs.append(data_log)
         return data_logs
 

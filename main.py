@@ -9,7 +9,9 @@
 
 import argparse
 
+from my_exceptions.my_exceptions import DateError, LogFileNotExistError, ReportError
 from scripts.scripts import LogAvgReporter
+from tests.scripts.conftest import CURRENT_DATE, NAMES_TEST_LOG_FILES, TEST_DATES
 from validators.validators import files_exists, report_validation, date_validation
 
 
@@ -21,10 +23,17 @@ def get_report_on_log_files(
     """
 
     # Проверяем валидность аргументов file, report и date
-    files_exists(log_files=log_files)
-    report_validation(report=report)
-    if date:
-        date_validation(date)
+    try:
+        files_exists(log_files=log_files)
+        report_validation(report=report)
+        if date:
+            date_validation(date)
+    except LogFileNotExistError as err:
+        raise err
+    except ReportError as err:
+        raise err
+    except DateError as err:
+        raise err
 
     # Создаём объект LogAvgReporter для работы с лог файлами
     if report == "average":
